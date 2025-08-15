@@ -15,6 +15,11 @@ async def get_prs(
     gh: GitHubClient = Depends(get_github_client),
 ):
     # Optional: enforce token presence for sane rate limits
+    print("Request---->")
+    print(owner)
+    print(repo)
+    print("End ----")
+
     if not get_settings().github_token:
         raise HTTPException(status_code=400, detail="Set GITHUB_TOKEN for higher rate limits.")
     svc = PRService(gh)
