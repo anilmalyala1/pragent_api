@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     max_pages: int = 10
      # NEW: max bytes per file (server-side guard)
     max_file_bytes: int = 1_000_000  # ~1MB
+    vcs_provider: str = Field(default="github", validation_alias="VCS_PROVIDER")
+
 
 settings = Settings()
 

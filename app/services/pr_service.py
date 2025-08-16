@@ -1,6 +1,6 @@
 import asyncio
 from typing import List, Dict, Any
-from app.core.github import GitHubClient
+from app.core.vcs_adapter import VCSAdapter
 from app.model.schemas import PRItem
 from app.utils.time import humanize_from_now
 
@@ -14,17 +14,17 @@ def _is_ai_reviewed(labels: List[Dict[str, Any]]) -> bool:
     return False
 
 class PRService:
-    def __init__(self, gh: GitHubClient):
-        self.gh = gh
+    def __init__(self, vcs: VCSAdapter):
+        self.vcs = vcs
 
     async def list_prs(self, owner: str, repos: List[str], state: str = "open") -> List[PRItem]:
-        pr_lists = await asyncio.gather(*[self.gh.list_pull_requests(owner, r, state) for r in repos])
+        pr_lists = await asyncio.gather(*[self.vcs.list_pull_requests(owner, r, state) for r in repos])
 
         async def build_item(repo: str, pr: Dict[str, Any]) -> PRItem:
             number = pr["number"]
             detail, files = await asyncio.gather(
-                self.gh.get_pull_request(owner, repo, number),
-                self.gh.list_pull_request_files(owner, repo, number),
+                self.vcs.get_pull_request(owner, repo, number),
+                self.vcs.list_pull_request_files(owner, repo, number),
             )
             head = pr.get("head") or {}
             return PRItem(

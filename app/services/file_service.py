@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional
-from app.core.github import GitHubClient
+from app.core.github import GitHubAdapter
 import re
 
 class FileService:
-    def __init__(self, gh: GitHubClient):
+    def __init__(self, gh: GitHubAdapter):
         self.gh = gh
 
     async def get_files_map(self, owner: str, repo: str, paths: List[str], ref: Optional[str] = None) -> Dict[str, str]:

@@ -4,12 +4,11 @@ from typing import Any, Dict, List, Optional
 from app.config import Settings, get_settings
 import os
 
-class GitHubClient:
+from app.core.vcs_adapter import VCSAdapter
+
+class GitHubAdapter(VCSAdapter):
     def __init__(self, settings: Settings):
         self.settings = settings
-        print("----Header---")
-        print(self._headers())
-
         self._client = httpx.AsyncClient(
             base_url=self.settings.github_api_base,
             headers=self._headers(),
@@ -18,11 +17,8 @@ class GitHubClient:
 
     def _headers(self) -> Dict[str, str]:
         h = {"Accept": "application/vnd.github+json"}
-        h["Authorization"] = f"Bearer {os.getenv("GITHUB_TOKEN")}"
-        '''
         if self.settings.github_token:
             h["Authorization"] = f"Bearer {self.settings.github_token}"
-        '''
         return h
 
     async def aclose(self):
@@ -136,7 +132,7 @@ class GitHubClient:
     
 # FastAPI dependency factory
 async def get_github_client(settings: Settings = get_settings()):
-    client = GitHubClient(settings)
+    client = GitHubAdapter(settings)
     try:
         yield client
     finally:
