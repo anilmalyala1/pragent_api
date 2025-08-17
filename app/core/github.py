@@ -129,6 +129,10 @@ class GitHubAdapter(VCSAdapter):
           filename, status, additions, deletions, changes, blob_url, raw_url, contents_url, patch (optional)
         """
         return await self._paginate(f"/repos/{owner}/{repo}/pulls/{number}/files", {"per_page": 100})
+
+    async def list_repositories(self, owner: str) -> List[Dict[str, Any]]:
+        url = f"/users/{owner}/repos"
+        return await self._paginate(url)
     
 # FastAPI dependency factory
 async def get_github_client(settings: Settings = get_settings()):

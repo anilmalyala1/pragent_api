@@ -17,3 +17,10 @@ class PRFilesWithContents(BaseModel):
     headSha: str
     files: List[str]
     contents: Dict[str, str]  # {filename: filecontents}
+
+class RepoItem(BaseModel):
+    id: str
+    name: str
+    owner: str
+    description: str | None = None
+    url: str

@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     max_file_bytes: int = 1_000_000  # ~1MB
     vcs_provider: str = Field(default="github", validation_alias="VCS_PROVIDER")
 
+    # Bitbucket settings
+    bitbucket_username: str | None = Field(default=None, validation_alias="BITBUCKET_USERNAME")
+    bitbucket_app_password: str | None = Field(default=None, validation_alias="BITBUCKET_APP_PASSWORD")
+    bitbucket_api_base: str = Field(default="https://api.bitbucket.org/2.0", validation_alias="BITBUCKET_API_BASE")
+
 
 settings = Settings()
 

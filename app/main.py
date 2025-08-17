@@ -4,6 +4,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from app.routes.prs import router as prs_router
 from app.routes.files import router as files_router
 from app.routes.review import router as review_router
+from app.routes.repos import router as repos_router
 from dotenv import load_dotenv,find_dotenv
 import os
 import logging
@@ -58,6 +59,7 @@ app.add_middleware(
 app.include_router(prs_router)
 app.include_router(files_router)  # NEW
 app.include_router(review_router) 
+app.include_router(repos_router) 
 
 
 # Optional: health check

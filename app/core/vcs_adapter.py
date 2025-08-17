@@ -17,3 +17,7 @@ class VCSAdapter(ABC):
     @abstractmethod
     async def get_file_text(self, owner: str, repo: str, path: str, ref: Optional[str] = None) -> Optional[str]:
         pass
+
+    @abstractmethod
+    async def list_repositories(self, owner: str) -> List[Dict[str, Any]]:
+        pass
