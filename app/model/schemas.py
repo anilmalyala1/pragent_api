@@ -11,3 +11,8 @@ class PRItem(BaseModel):
     updatedAgo: str
     aiReviewed: bool
     files: List[str]
+
+
+class Project(BaseModel):
+    ProjectName: str
+    ProjectId: str
