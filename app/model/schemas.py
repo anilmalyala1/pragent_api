@@ -16,3 +16,4 @@ class PRItem(BaseModel):
 class Project(BaseModel):
     ProjectName: str
     ProjectId: str
+    AccessToken: str
