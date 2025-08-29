@@ -1,3 +1,5 @@
+import base64
+import re
 import httpx
 from typing import Any, Dict, List, Optional
 from app.config import Settings, get_settings
@@ -49,6 +51,45 @@ class GitHubClient:
     async def list_pull_request_files(self, owner: str, repo: str, number: int) -> List[str]:
         items = await self._paginate(f"/repos/{owner}/{repo}/pulls/{number}/files", {"per_page": 100})
         return [i.get("filename", "") for i in items]
+
+    async def get_pull_request_contents(self, owner: str, repo: str, number: int) -> List[Dict[str, Any]]:
+        items = await self._paginate(f"/repos/{owner}/{repo}/pulls/{number}/files", {"per_page": 100})
+        results: List[Dict[str, Any]] = []
+        for item in items:
+            filename = item.get("filename", "")
+            contents_url = item.get("contents_url")
+            patch = item.get("patch") or ""
+            content = ""
+            if contents_url:
+                r = await self._client.get(contents_url)
+                r.raise_for_status()
+                data = r.json()
+                encoded = data.get("content")
+                if encoded:
+                    content = base64.b64decode(encoded).decode()
+            changed = self._parse_patch(patch)
+            results.append({"filename": filename, "content": content, "changedLines": changed})
+        return results
+
+    @staticmethod
+    def _parse_patch(patch: str) -> List[int]:
+        changed: List[int] = []
+        if not patch:
+            return changed
+        line_no = 0
+        for line in patch.splitlines():
+            if line.startswith("@@"):
+                m = re.match(r"@@ -\d+(?:,\d+)? \+(\d+)", line)
+                if m:
+                    line_no = int(m.group(1)) - 1
+            elif line.startswith("+") and not line.startswith("+++"):
+                line_no += 1
+                changed.append(line_no)
+            elif line.startswith("-") and not line.startswith("---"):
+                pass
+            else:
+                line_no += 1
+        return changed
 
 
 # FastAPI dependency factory
