@@ -13,6 +13,12 @@ class PRItem(BaseModel):
     files: List[str]
 
 
+class FileContent(BaseModel):
+    filename: str
+    content: str
+    changedLines: List[int]
+
+
 class Project(BaseModel):
     ProjectName: str
     ProjectId: str

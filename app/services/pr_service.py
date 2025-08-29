@@ -1,7 +1,7 @@
 import asyncio
 from typing import List, Dict, Any
 from app.core.github import GitHubClient
-from app.model.schemas import PRItem
+from app.model.schemas import PRItem, FileContent
 from app.utils.time import humanize_from_now
 
 AI_LABELS = { "ai-reviewed", "ai_reviewed", "ai:reviewed" }
@@ -47,3 +47,7 @@ class PRService:
         items = await asyncio.gather(*tasks)
         # Sort by recency if desired (left as-is to preserve input order)
         return items
+
+    async def get_pr_contents(self, owner: str, repo: str, number: int) -> List[FileContent]:
+        data = await self.gh.get_pull_request_contents(owner, repo, number)
+        return [FileContent(**d) for d in data]
